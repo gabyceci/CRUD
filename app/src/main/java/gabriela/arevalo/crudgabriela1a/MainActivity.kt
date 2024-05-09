@@ -36,11 +36,6 @@ class MainActivity : AppCompatActivity() {
         //1- Ponerle un layout a mi recycleview
         rcvDatos.layoutManager = LinearLayoutManager(this)
 
-        //2- Crear un adptador
-        val miAdaptador = Adaptador(listaDeDatos)
-
-
-
 
 
         //2- Programar el boton de agregar
@@ -67,7 +62,3 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-
-class Adaptador(private val Datos:Array<String>){
-    
-}
