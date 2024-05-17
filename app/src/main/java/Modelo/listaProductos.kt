@@ -1,5 +1,5 @@
 package Modelo
 
 data class listaProductos(
-    val nombreProducto: String,
+    val nombreProducto: String
 )

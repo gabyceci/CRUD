@@ -1,6 +1,7 @@
 package gabriela.arevalo.crudgabriela1a
 
 import Modelo.ClaseConexion
+import Modelo.listaProductos
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -33,8 +34,17 @@ class MainActivity : AppCompatActivity() {
         val btnAgregar = findViewById<Button>(R.id.btnAgregar)
         val rcvDatos = findViewById<RecyclerView>(R.id.rcvDatos)
 
+
         //1- Ponerle un layout a mi recycleview
         rcvDatos.layoutManager = LinearLayoutManager(this)
+
+        ////////Función para mostrar datos
+        fun obtenerDatos(): List<listaProductos>{
+            val objConexion = ClaseConexion().cadenaConexion()
+
+            val statement = objConexion?.createStatement()
+            val resultSet = statement?.executeQuery("select * from tbProductoss")!!
+        }
 
 
 
