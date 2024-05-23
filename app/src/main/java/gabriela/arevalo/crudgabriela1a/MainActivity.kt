@@ -2,6 +2,7 @@ package gabriela.arevalo.crudgabriela1a
 
 import Modelo.ClaseConexion
 import Modelo.listaProductos
+import RecycleViewHelpers.Adaptador
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -12,9 +13,11 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,6 +47,31 @@ class MainActivity : AppCompatActivity() {
 
             val statement = objConexion?.createStatement()
             val resultSet = statement?.executeQuery("select * from tbProductoss")!!
+
+            val listadoProductos = mutableListOf<listaProductos>()
+
+            //Recorrer todos los datos que me trajo el select
+
+            while (resultSet.next()){
+                val nombre = resultSet.getString("nombreProducto")
+                val producto = listaProductos(nombre)
+                listadoProductos.add(producto)
+            }
+
+
+            return listadoProductos
+
+        }
+
+        //Ejecutamos la funcion
+        CoroutineScope(Dispatchers.IO).launch {
+            val ejecutarFuncion = obtenerDatos()
+            withContext(Dispatchers.Main){
+                //Asigno el adaptador mi RecylerView
+                //uNO MI ADAPTADOR CON EL RECYCLERVIEW
+                val miAdaptador = Adaptador(ejecutarFuncion)
+                rcvDatos.adapter = miAdaptador
+            }
         }
 
 
