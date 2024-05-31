@@ -62,6 +62,13 @@ class Adaptador(private var Datos: List<listaProductos>): RecyclerView.Adapter<V
         val producto = Datos[position]
         holder.textView.text = producto.nombreProducto
 
+
+
+
+
+
+
+
         //Darle click al icono de borrar
         holder.imgBorrar.setOnClickListener {
 
@@ -90,6 +97,7 @@ class Adaptador(private var Datos: List<listaProductos>): RecyclerView.Adapter<V
             //Para mostrar la alerta
             val dialog = builder.create()
             dialog.show()
+
 
         }
     }
