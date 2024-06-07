@@ -5,11 +5,13 @@ import Modelo.listaProductos
 import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.recyclerview.widget.RecyclerView
 import gabriela.arevalo.crudgabriela1a.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class Adaptador(private var Datos: List<listaProductos>): RecyclerView.Adapter<ViewHolder>() {
 
@@ -48,6 +50,37 @@ class Adaptador(private var Datos: List<listaProductos>): RecyclerView.Adapter<V
         notifyItemRemoved(position)
         notifyDataSetChanged()
 
+    }
+
+    fun actualizarListadoDespuesDeEditar(uuid: String, nuevoNombre: String){
+        //Obtener el UUID
+        val identificador = Datos.indexOfFirst { it.uuid == uuid }
+        //Asigno el  nuevo nombre
+        Datos[identificador].nombreProducto = nuevoNombre
+        //Notifico que los cambios han sido realizados
+        notifyItemChanged(identificador)
+    }
+
+    //Creamos la funcion de editar o actualizar en la base de datos
+    fun editarProductos(nombreProducto: String, uuid: String){
+        //Creo una corrutina
+        GlobalScope.launch(Dispatchers.IO){
+            //1- Creo un objeto de la clase conexion
+            val objConexion = ClaseConexion().cadenaConexion()
+
+            //2- Creo una variable que contenga un PrepareStatement
+            val updateProductos = objConexion?.prepareStatement("update tbProductoss set nombreProducto = ? where uuid = ?")!!
+            updateProductos.setString(1, nombreProducto)
+            updateProductos.setString(2, uuid)
+            updateProductos.executeUpdate()
+
+            val commit = objConexion.prepareStatement("commit")
+            commit.executeUpdate()
+
+            withContext(Dispatchers.Main){
+                actualizarListadoDespuesDeEditar(uuid, nombreProducto)
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -97,6 +130,37 @@ class Adaptador(private var Datos: List<listaProductos>): RecyclerView.Adapter<V
             //Para mostrar la alerta
             val dialog = builder.create()
             dialog.show()
+
+            //Click al icono de editar (lapicito)
+            holder.imgEditar.setOnClickListener {
+                //Creo una alerta
+                val contexto = holder.itemView.context
+                val builder = AlertDialog.Builder(contexto)
+
+                builder.setTitle("Editar")
+
+                //Cuadro de texto donde el usuario escribirá el nuevo nombre
+                val cuadritoDeTexto = EditText(contexto)
+                cuadritoDeTexto.setHint(producto.nombreProducto)
+
+                //Voy a poner el cuadrito en el cuadro de alerta
+                builder.setView(cuadritoDeTexto)
+
+                //Programamos los botones
+                builder.setPositiveButton("Actualizar"){
+                    dialog, wich ->
+                    editarProductos(cuadritoDeTexto.text.toString(), producto.uuid)
+                }
+
+                builder.setNegativeButton("Cancelar"){
+                    dialog, wich ->
+                    dialog.dismiss()
+
+                }
+
+                val dialog = builder.create()
+                dialog.show()
+            }
 
 
         }
